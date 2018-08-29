@@ -1,4 +1,6 @@
 import * as React from 'react';
+import styles from './styles';
+import { css } from 'aphrodite';
 
 /** 
  * The number of cells wide and high the grid is
@@ -36,8 +38,19 @@ export class Grid<T> extends React.Component<IGridProps, IGridState<T>> {
 
     public render() {
         return (
-            <div className="grid">
-                <p> Tetris </p>
+            <div className={css(styles.grid)}>
+                {
+                    this.state.cells.map(row => (
+                        <div className={css(styles.row)}>
+                        {
+                            row.map(cell => (
+                                    <div className={css(styles.cell)}>
+                                </div>
+                            ))
+                        }
+                      </div>
+                    ))
+                }
             </div>
         );
     }
