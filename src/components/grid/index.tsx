@@ -1,7 +1,3 @@
-import { css } from 'aphrodite';
-import * as React from 'react';
-import styles from './styles';
-
 /** 
  * The number of cells wide and high the grid is
  */
@@ -20,7 +16,11 @@ interface IGridState {
 /** 
  * A 2D grid of cells, containing some data
  */
-export class Grid extends React.Component<IGridProps, IGridState> {
+export class Grid {
+
+    // FIXME: this used to be a react component, so these will need changing
+    private props: IGridProps;
+    private state: IGridState;
 
     /**
      * Requires width and height dimensions in props, cell state is optional
@@ -28,28 +28,13 @@ export class Grid extends React.Component<IGridProps, IGridState> {
      * @param state the cell data
      */
     constructor(props: IGridProps, state? : IGridState) {
-        super(props);
+
+        this.props = props;
 
         // use state parameter if provided, otherwise fill with nulls
         this.state = state || {
             cells: Array(props.height).fill(false).map(row => Array(props.width).fill(false))
         };
-    }
-
-    public render() {
-        return (
-            <div className={css(styles.grid)}>
-                {
-                    this.state.cells.map((row, y) => (
-                        <div className={css(styles.row)}>
-                            {
-                                row.map((cell, x) => <div className={css(styles.cell, cell ? styles.active : null)} key={x + '' + y}/> )
-                            }
-                        </div>
-                    ))
-                }
-            </div>
-        );
     }
 
     /**
@@ -98,10 +83,11 @@ export class Grid extends React.Component<IGridProps, IGridState> {
      * @param up number of rows to add/remove from the start of the grid
      * @param right the number of columns to add/remove from the start of the grid
      */
-    public shift = (up: number, right: number): Grid => 
+    public shift = (up: number, right: number): Grid => (
         new Grid(this.getDimensions(), {
             cells: this.verticalShift(this.getCells(), up).map(row => this.horizontalShift(row, right))
         })
+    )
    
     /** 
      * Returns whether or not the Grids overlap 
@@ -121,8 +107,8 @@ export class Grid extends React.Component<IGridProps, IGridState> {
      * @param right the number of cells to add/remove when shifting
      */
     private horizontalShift = (arr: any[], right: number): any[]=> {
-        const sArr = [...Array(Math.abs(right)), ...arr, ...Array(Math.abs(right))];
-        return right > 0 ? sArr.slice(sArr.length - arr.length) : sArr.slice(0, arr.length);
+        const sArr = [...Array(Math.abs(right)).fill(false), ...arr, ...Array(Math.abs(right)).fill(false)];
+        return right < 0 ? sArr.slice(sArr.length - arr.length) : sArr.slice(0, arr.length);
     }
 
     /** 
@@ -131,7 +117,16 @@ export class Grid extends React.Component<IGridProps, IGridState> {
      * @param up the number of rows to add/remove when shifting 
      */
     private verticalShift = (arrs: any[][], up: number): any[][] => {
-        return arrs;
+
+        const { height } = this.props;
+
+        const sArr = [
+            Array(Math.abs(height)).fill(false),
+            ...arrs, 
+            Array(Math.abs(height)).fill(false)
+        ];
+        
+        return up > 0 ? sArr.slice(sArr.length - arrs.length) : sArr.slice(0, arrs.length);
     }
     
 }
