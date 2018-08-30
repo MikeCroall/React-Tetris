@@ -3,23 +3,24 @@ import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 
-import { spawnTetromino } from './actions';
+import { Move, moveTetromino, spawnTetromino } from './actions';
 import App from './App';
 import { Tetromino } from './components/tetromino';
-import rootReducer from './reducers/rootReducer';
+import rootReducer, { initialState } from './reducers/rootReducer';
 import registerServiceWorker from './registerServiceWorker';
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, initialState);
 
 console.log(store.getState());
 
-const unsubscribe = store.subscribe(() =>
-  console.log(store.getState())
-)
-
 store.dispatch(spawnTetromino(Tetromino.BACKWARDS_Z));
 
-unsubscribe()
+setInterval(
+  () => {
+    store.dispatch(moveTetromino(Move.DOWN))
+  }
+, 1000);
+
 
 ReactDOM.render(
   <Provider store={store}>
