@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Grid } from './grid/grid';
+import { Grid } from '../grid/';
 
 // the different tetromino names
 export enum Tetromino {

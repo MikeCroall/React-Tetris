@@ -43,7 +43,7 @@ export class Grid extends React.Component<IGridProps, IGridState> {
                     this.state.cells.map((row, y) => (
                         <div className={css(styles.row)}>
                             {
-                                row.map((cell, x) => <div className={css(styles.cell)} key={x + '' + y}/> )
+                                row.map((cell, x) => <div className={css(styles.cell, cell ? styles.active : null)} key={x + '' + y}/> )
                             }
                         </div>
                     ))

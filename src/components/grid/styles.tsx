@@ -11,13 +11,17 @@ export default StyleSheet.create({
     row: {
         display: 'flex',
         flexFlow: 'row',
-        height: 50
+        height: 20
     },
 
     cell: {
-        backgroundColor: 'blue',
-        flexBasis: 46,
+        backgroundColor: 'gray',
+        flexBasis: 16,
         flexShrink: 0,
         margin: 2
+    },
+
+    active: {
+        backgroundColor: 'black'
     }
 });
