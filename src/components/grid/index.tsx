@@ -71,7 +71,7 @@ export class Grid extends React.Component<IGridProps, IGridState> {
     /** 
      * Returns a copy of the cells in this grid's state 
      */
-    public getCells = (): any[][] => this.state.cells.map(row => row.slice(0));
+    public getCells = (): any[][] => this.state.cells.slice(0).map(row => row.slice(0));
 
     /**
      * Merges the contents of this, and another, Grid's cells into a new one
