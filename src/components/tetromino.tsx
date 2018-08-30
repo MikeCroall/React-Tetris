@@ -20,39 +20,44 @@ interface Coordinate {
     y: number;
 }
 
-/** Maps each Tetromino enum to an Array of its coordinates */
-const tetrominoCoordinates: Record<Tetromino, Array<Coordinate>> = {
+/** Maps each Tetromino enum to a nested Array of its coordinates 
+ * Each sub-array contains the coordinates of the tetromino at different rotations
+ */
+const tetrominoCoordinates: Record<Tetromino, Array<Array<Coordinate>>> = {
     longBoy: [
-        ..._.range(4).map(x => ({x, y: 0}))
+        _.range(4).map(x => ({ x, y: 0 })),
+        _.range(4).map(y => ({ x: 0, y }))
     ],
     backL: [
-        {x: 0, y: 0},
-        ..._.range(3).map(x => ({x, y: 1}))
+        [{ x: 0, y: 0 }, ..._.range(3).map(x => ({ x, y: 1 }))],
+        [{ x: 2, y: 0 }, ..._.range(3).map(y => ({ x: 1, y }))],
+        [{ x: 2, y: 2 }, ..._.range(3).map(x => ({ x, y: 1 }))],
+        [{ x: 0, y: 2 }, ..._.range(3).map(y => ({ x: 1, y }))]
     ],
     l: [
-        {x: 2, y: 0},
-        ..._.range(3).map(x => ({ x, y: 1 }))
+        [{ x: 2, y: 0 }, ..._.range(3).map(x => ({ x, y: 1 }))],
+        [{ x: 2, y: 2 }, ..._.range(3).map(y => ({ x: 1, y }))],
+        [{ x: 0, y: 2 }, ..._.range(3).map(x => ({ x, y: 1 }))],
+        [{ x: 0, y: 0 }, ..._.range(3).map(y => ({ x: 1, y }))]
     ],
     square: 
-        [0, 1].reduce((acc, x) => 
+        [[0, 1].reduce((acc, x) => 
             [...acc, ...[0, 1].map(y => ({ x, y }))], 
-        [])
+        [])]
     ,
     backZ: [
-        { x: 0, y: 1 },
-        { x: 1, y: 0 },
-        { x: 1, y: 1 },
-        { x: 2, y: 0 }
+        [...[1, 2].map(x => ({ x, y: 0 })), ...[0, 1].map(x => ({ x, y: 1 }))],
+        [...[1, 2].map(y => ({ x:1 , y })), ...[0, 1].map(y => ({ x: 0, y }))]
     ],
     t: [
-        {x: 1, y: 0},
-        ..._.range(3).map(x => ({x, y: 1}))
+        [{ x: 1, y: 0 }, ..._.range(3).map(x => ({ x, y: 1 }))],
+        [{ x: 1, y: 1 }, ..._.range(3).map(y => ({ x: 0, y }))],
+        [{ x: 1, y: 2 }, ..._.range(3).map(x => ({ x, y: 1 }))],
+        [{ x: 0, y: 1 }, ..._.range(3).map(y => ({ x: 1, y }))]
     ],
     z: [
-        { x: 0, y: 0 },
-        { x: 0, y: 1 },
-        { x: 1, y: 1 },
-        { x: 2, y: 1 }
+        [...[1, 2].map(x => ({ x, y: 1 })), ...[0, 1].map(x => ({ x, y: 0 }))],
+        [...[1, 2].map(y => ({ x: 0, y })), ...[0, 1].map(y => ({ x: 1, y }))]
     ]
 }
 
