@@ -31,9 +31,9 @@ export class Grid extends React.Component<IGridProps, IGridState> {
         super(props);
 
         // use state parameter if provided, otherwise fill with nulls
-        this.state =  {
+        this.state = state || {
             cells: Array(props.height).fill(false).map(row => Array(props.width).fill(false))
-        }
+        };
     }
 
     public render() {
@@ -51,6 +51,11 @@ export class Grid extends React.Component<IGridProps, IGridState> {
             </div>
         );
     }
+
+    /**
+     * Clones the Grid
+     */
+    public clone = (): Grid => new Grid(this.getDimensions(), { cells: this.getCells() });
 
     /**
      * Clones the Grid with a row removed, and a new one appended to the start
@@ -87,7 +92,6 @@ export class Grid extends React.Component<IGridProps, IGridState> {
             )
         })
     }
-
 
     /** 
      * Shifts copied cell data up or right, returning a new Grid with this cell data

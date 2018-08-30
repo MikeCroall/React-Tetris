@@ -66,10 +66,12 @@ const tetrominoCoordinates: Record<Tetromino, ICoordinate[][]> = {
 export const buildTetriminoGrid = (tetromino: Tetromino, width: number, height: number): Grid => {
 
     // create placeholder cells
-    const cells = Array(height).map(row => Array(width).fill(false));
+    const cells = Array(height).fill(false).map(row => Array(width).fill(false));
 
     // add the tetromino cells onto it
-    tetrominoCoordinates[tetromino][0].map(c => cells[c.y][c.x] = true);
+    tetrominoCoordinates[tetromino][0].map(c => { 
+        cells[c.y][c.x] = true 
+    });
 
     // create a new Grid instance with these cells
     return new Grid({ width, height }, { cells });
