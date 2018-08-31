@@ -7,7 +7,7 @@ import {
     UPDATE_SCORE,
  } from '../actions';
 import { Grid } from '../components/grid';
-import { buildTetriminoGrid } from '../components/tetromino';
+import { buildTetriminoGrid, Tetromino } from '../components/tetromino';
 
 const width = 10;
 const height = 10;
@@ -96,19 +96,43 @@ function spawnTetromino(state: IStore, action: any): IStore {
  * @param state the current state of the store
  */
 function mergeForeground(state: IStore): IStore {
-    return Object.assign({}, state, {
+    const newState =  {
         background: state.background.merge(state.foreground),
-        foreground: new Grid({ width, height })
-    })
+        foreground: new Grid({ width, height }),
+        score: state.score
+    }
+
+    console.log(newState);
+
+    return newState;
 }
 
 /**
  * Deletes full rows from the background
  * @param state the current state of the store
- * TODO: implement this please
+ * FIXME: fix this
  */
 function updateBackground(state: IStore): IStore {
-    return state;
+    const lastRow = state.foreground.getCells();
+
+    let newState: IStore = {
+        background: state.background.clone(),
+        foreground: state.foreground.clone(),
+        score: state.score
+    };
+
+    // handling merging the foreground and background
+    if (lastRow[lastRow.length - 1].some(c => c)){
+        newState = spawnTetromino(mergeForeground(state), { tetromino: Tetromino.T });
+    }
+
+    // FIXME: this is disgusting, change it
+    while(newState.background.getCells().some(row => row.every(c => c))){
+        console.log('deleting row');
+        newState.background = newState.background.deleteRow(newState.background.getCells().findIndex(row => row.every(c => c)));
+    }
+    
+    return newState;
 }
 
 /**
