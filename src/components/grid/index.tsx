@@ -83,11 +83,27 @@ export class Grid {
      * @param up number of rows to add/remove from the start of the grid
      * @param right the number of columns to add/remove from the start of the grid
      */
-    public shift = (up: number, right: number): Grid => (
-        new Grid(this.getDimensions(), {
-            cells: this.verticalShift(this.getCells(), up).map(row => this.horizontalShift(row, right))
-        })
-    )
+    public shift = (up: number, right: number): Grid => {
+
+        let cells = this.getCells();
+
+        const leftSide = cells.some(r => r[0]);
+        const rightSide = cells.some(r => r[r.length - 1]);
+        const topSide = cells[0].some(r => r);
+        const bottomSide = cells[cells.length - 1].some(r => r);
+
+        // only allowing left or right shifts if no blocking cells exist
+        if ((right > 0 && !rightSide) || (right < 0 && !leftSide)) {
+            cells = cells.map(row => this.horizontalShift(row, right));
+        }
+
+        // only allowing up or right shifts if no blocking cells exist
+        if ((up > 0 && !topSide) || (up < 0 && !bottomSide)) {
+            cells = this.verticalShift(cells, up);
+        }
+
+        return new Grid(this.getDimensions(), { cells })
+    }
    
     /** 
      * Returns whether or not the Grids overlap 
@@ -107,6 +123,11 @@ export class Grid {
      * @param right the number of cells to add/remove when shifting
      */
     private horizontalShift = (arr: any[], right: number): any[]=> {
+        // FIXME: tidy up this function a bit
+        if ((right < 0 && arr[0]) || (right > 0 && arr[arr.length - 1])){
+            return arr;
+        }
+    
         const sArr = [...Array(Math.abs(right)).fill(false), ...arr, ...Array(Math.abs(right)).fill(false)];
         return right < 0 ? sArr.slice(sArr.length - arr.length) : sArr.slice(0, arr.length);
     }
@@ -121,7 +142,7 @@ export class Grid {
         const { height } = this.props;
 
         if (up === 0){
-            return [...arrs];
+            return arrs;
         }
 
         const sArr = [
