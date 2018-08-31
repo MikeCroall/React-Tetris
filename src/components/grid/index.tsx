@@ -112,7 +112,7 @@ export class Grid {
     public overlap = (other: Grid): boolean =>
         this.state.cells.map(
             (row, y) => row.map(
-                (cell, x) => other.getCells()[y][x] !== null && cell !== null
+                (cell, x) => [other.getCells()[y][x], cell].every(c => c)
             ).some(x => x)
         ).some(x => x);
 

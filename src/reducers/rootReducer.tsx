@@ -57,12 +57,14 @@ export default function tetrisApp(state: IStore = initialState, action: any): IS
  * @returns the new state of the store, with the foreground change
  */
 function moveTetromino(state: IStore, action: any): IStore {
-    console.log(action.move);
+    const shiftedForeground: Grid = state.foreground.shift(
+        action.move === 'U' ? 1 : (action.move === 'D' ? -1 : 0),
+        action.move === 'R' ? 1 : (action.move === 'L' ? -1 : 0)
+    );
+
     return Object.assign({}, state, {
-        foreground: state.foreground.shift(
-            action.move === 'U' ? 1 : (action.move === 'D' ? -1 : 0), 
-            action.move === 'R' ? 1 : (action.move === 'L' ? -1 : 0)
-        )
+        foreground: state.background.overlap(shiftedForeground) ? 
+            state.foreground : shiftedForeground
     });
 }
 
@@ -95,17 +97,11 @@ function spawnTetromino(state: IStore, action: any): IStore {
  * Adds foreground cell data onto the background before erasing it
  * @param state the current state of the store
  */
-function mergeForeground(state: IStore): IStore {
-    const newState =  {
-        background: state.background.merge(state.foreground),
-        foreground: new Grid({ width, height }),
-        score: state.score
-    }
-
-    console.log(newState);
-
-    return newState;
-}
+const mergeForeground = (state: IStore): IStore => ({
+    background: state.background.merge(state.foreground),
+    foreground: new Grid({ width, height }),
+    score: state.score
+})
 
 /**
  * Deletes full rows from the background
@@ -121,8 +117,10 @@ function updateBackground(state: IStore): IStore {
         score: state.score
     };
 
+    const shiftedForeground: Grid = state.foreground.shift(-1, 0);
+
     // handling merging the foreground and background
-    if (lastRow[lastRow.length - 1].some(c => c)){
+    if (lastRow[lastRow.length - 1].some(c => c) || state.background.overlap(shiftedForeground)){
         newState = spawnTetromino(mergeForeground(state), { tetromino: Tetromino.T });
     }
 
