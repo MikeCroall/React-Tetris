@@ -26,6 +26,7 @@
     "aphrodite": "^2.2.3",
     "import-sort": "^5.2.0",
     "lodash": "^4.17.10",
+    "react-keydown": "^1.9.7",
     "typescript": "^3.0.1"
   }
 }

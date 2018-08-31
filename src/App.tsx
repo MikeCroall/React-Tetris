@@ -1,9 +1,21 @@
 import * as React from 'react';
+import keydown, { Keys } from 'react-keydown';
+import { connect } from 'react-redux';
+import { Move, moveTetromino } from './actions';
 import Gameboard from './components/viewport/gameboard';
 import Scoreboard from './components/viewport/scores';
+import { IStore } from './reducers/rootReducer';
 
-class App extends React.Component {
+interface IAppProps {
+  left: () => void;
+  right: () => void;
+  up: () => void;
+  down: () => void;
+}
+
+class App extends React.Component<IAppProps> {  
   public render() {
+    console.log('App props', this.props.left);
     return (
       <div className="App">
         <Scoreboard />
@@ -11,6 +23,31 @@ class App extends React.Component {
       </div>
     );
   }
+
+  @keydown(Keys.LEFT, Keys.RIGHT, Keys.UP, Keys.DOWN, Keys.R)
+  private submit(event: any){ 
+    switch(event.key){
+      case 'ArrowLeft':   return this.props.left();
+      case 'ArrowRight':  return this.props.right();
+      case 'ArrowUp':     return this.props.up();
+      case 'ArrowDown':   return this.props.down();
+      case 'r':
+        break;
+    }
+  }
 }
 
-export default App;
+const mapDispatchToProps = (dispatch:any) => {
+  const actions = {
+    down: () => dispatch(moveTetromino(Move.DOWN)),
+    left: () => dispatch(moveTetromino(Move.LEFT)),
+    right: () => dispatch(moveTetromino(Move.RIGHT)),
+    up: () => dispatch(moveTetromino(Move.UP))
+  }
+  return actions;
+}
+
+export default connect(
+  () => ({}),
+  mapDispatchToProps
+)(App);

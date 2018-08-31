@@ -120,6 +120,10 @@ export class Grid {
 
         const { height } = this.props;
 
+        if (up === 0){
+            return [...arrs];
+        }
+
         const sArr = [
             Array(Math.abs(height)).fill(false),
             ...arrs, 

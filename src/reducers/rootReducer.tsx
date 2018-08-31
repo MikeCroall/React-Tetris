@@ -57,6 +57,7 @@ export default function tetrisApp(state: IStore = initialState, action: any): IS
  * @returns the new state of the store, with the foreground change
  */
 function moveTetromino(state: IStore, action: any): IStore {
+    console.log(action.move);
     return Object.assign({}, state, {
         foreground: state.foreground.shift(
             action.move === 'U' ? 1 : (action.move === 'D' ? -1 : 0), 
