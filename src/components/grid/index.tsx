@@ -7,10 +7,12 @@ interface IGridProps {
 }
 
 /** 
- * State is just cell data
+ * State is just cell data (and potentially some positive x and y offsets)
  */
 interface IGridState {
-    cells: boolean[][]
+    cells: boolean[][],
+    xOffset?: number,
+    yOffset?: number
 }
 
 /** 
@@ -61,7 +63,52 @@ export class Grid {
     /** 
      * Returns a copy of the cells in this grid's state 
      */
-    public getCells = (): any[][] => this.state.cells.slice(0).map(row => row.slice(0));
+    public getCells = (): boolean[][] => this.state.cells.slice(0).map(row => row.slice(0));
+
+    /**
+     * Returns a copy of the grid's cells once offsets have been applied
+     */
+    public getOffsetCells = (): boolean[][] => {
+
+        // get the width of the grid, so that rows can be filled properly
+        const { width } = this.props;
+
+        // get this grid's cell data, and its (x, y) offset from the (0, 0) origin
+        const { cells, xOffset = 0, yOffset = 0 } = this.state;
+
+        return [
+
+            // fill in y offset rows of false data
+            ...Array(yOffset).fill(false).map(r => Array(width + xOffset).fill(false)),
+
+            // pad the grid's rows with the x offset data
+            ...cells.map(r => [Array(xOffset).fill(false), ...r])
+        ];
+    }
+
+    /**
+     * Returns a copy of the grid's cells, padded to a given width and height
+     */
+    public getPaddedCells = (w: number, h: number): boolean[][] => {
+        
+        // get the width of the grid, so that rows can be filled properly
+        const { width, height } = this.props;
+
+        // get this grid's cell data, and its (x, y) offset from the (0, 0) origin
+        const cells = this.getOffsetCells();
+
+        const xOffset = w - width || 0;
+        const yOffset = h - height || 0;
+
+        return [
+
+            // fill in y offset rows of false data
+            ...Array(yOffset).fill(false).map(r => Array(w).fill(false)),
+
+            // pad the grid's rows with the x offset data
+            ...cells.map(r => [Array(xOffset).fill(false), ...r])
+        ];
+    }
 
     /**
      * Merges the contents of this, and another, Grid's cells into a new one
