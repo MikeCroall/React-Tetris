@@ -35,5 +35,5 @@ export class Gameboard extends React.Component<IGameboardProps> {
 }
 
 export default connect( (state: IStore) => ({
-    grid: state.foreground.merge(state.background).getCells()
+    grid: state.background.merge(state.foreground).getCells()
 }))(Gameboard);
