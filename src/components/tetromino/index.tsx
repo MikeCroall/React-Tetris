@@ -40,11 +40,22 @@ const tetrominoCoordinates: Record<Tetromino, ICoordinate[][]> = {
     ],
     longBoy: [
         _.range(4).map(x => ({ x, y: 0 })),
-        _.range(4).map(y => ({ x: 0, y }))
+        _.range(4).map(y => ({ x: 0, y })),
+        _.range(4).map(x => ({ x, y: 0 })),
+        _.range(4).map(y => ({ x: 0, y })),
     ],
     square: [
         [0, 1].reduce((acc, x) => 
             [...acc, ...[0, 1].map(y => ({ x, y }))], 
+        []),
+        [0, 1].reduce((acc, x) =>
+            [...acc, ...[0, 1].map(y => ({ x, y }))],
+        []),
+        [0, 1].reduce((acc, x) =>
+            [...acc, ...[0, 1].map(y => ({ x, y }))],
+        []),
+        [0, 1].reduce((acc, x) =>
+            [...acc, ...[0, 1].map(y => ({ x, y }))],
         [])
     ],
     t: [
@@ -60,20 +71,49 @@ const tetrominoCoordinates: Record<Tetromino, ICoordinate[][]> = {
 }
 
 /**
- * Creates a grid containing this Tetromino at the top
- * @param tetromino the Tetromino enum instance
+ * Returns a random tetromino from 
  */
-export const buildTetriminoGrid = (tetromino: Tetromino, width: number, height: number): Grid => {
+export const getRandomTetromino = (): Tetromino => 
+    _.sample([
+        Tetromino.LONG_BOY,
+        Tetromino.BACKWARDS_L,
+        Tetromino.L,
+        Tetromino.SQUARE,
+        Tetromino.BACKWARDS_Z,
+        Tetromino.T,
+        Tetromino.Z
+    ])!;
 
+/**
+ * Returns an Array of ICoordinate ({x, y}) Objects for a given Tetromino and orientation
+ * @param tetromino a Tetromino instance
+ * @param orientation the orientation to get the coordinates for
+ */
+const getTetromino = (tetromino: Tetromino, orientation: number = 0): ICoordinate[] => tetrominoCoordinates[tetromino][orientation]; 
+
+/**
+ * Builds a 4x4 boolean grid representation for a given Tetromino and orientation
+ * @param tetromino the Tetromino instance to use the coordinates for
+ * @param orientation the orientation (* 90deg) to get the coordinates for
+ */
+export const buildTetrominoCells = (tetromino: Tetromino, orientation: number = 0): boolean[][] => {
+    
     // create placeholder cells
-    const cells = Array(height).fill(false).map(row => Array(width).fill(false));
+    const cells = Array(4).fill(false).map(row => Array(4).fill(false));
 
     // add the tetromino cells onto it
-    tetrominoCoordinates[tetromino][0].map(c => { 
-        cells[c.y][c.x] = true 
+    getTetromino(tetromino, orientation % 4).map(c => {
+        cells[c.y][c.x] = true
     });
+    
+    return cells;
+}
+
+/**
+ * Creates a grid containing this Tetromino at the top
+ * @param tetromino the Tetromino enum instance (Optional)
+ */
+export const buildTetriminoGrid = (tetromino: Tetromino = getRandomTetromino(), orientation: number = 0): Grid => 
 
     // create a new Grid instance with these cells
-    return new Grid({ width, height }, { cells });
-
-}
+    new Grid({ width: 4, height: 4 }, { cells: buildTetrominoCells(tetromino, orientation) });

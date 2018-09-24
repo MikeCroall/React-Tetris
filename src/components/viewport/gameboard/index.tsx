@@ -16,10 +16,6 @@ export interface IGameboardProps {
  */
 export class Gameboard extends React.Component<IGameboardProps> {
 
-    constructor(props: IGameboardProps){
-        super(props);
-    }
-
     public render() {
         return (
             <div className={css(styles.grid)}>
@@ -39,5 +35,5 @@ export class Gameboard extends React.Component<IGameboardProps> {
 }
 
 export default connect( (state: IStore) => ({
-    grid: state.foreground.merge(state.background).getCells()
+    grid: state.background.merge(state.foreground).getCells()
 }))(Gameboard);
