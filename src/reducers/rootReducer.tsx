@@ -171,10 +171,15 @@ function updateBackground(state: IStore): IStore {
         newState = spawnTetromino(mergeForeground(state), { tetromino: Tetromino.T });
     }
 
+    let combo = 0;
+
     // FIXME: this is disgusting, change it
     while(newState.background.getCells().some(row => row.every(c => c))){
         newState.background = newState.background.deleteRow(newState.background.getCells().findIndex(row => row.every(c => c)));
+        combo = combo ? combo * 2 : 100;   
     }
+
+    newState.score += combo;
     
     return newState;
 }
