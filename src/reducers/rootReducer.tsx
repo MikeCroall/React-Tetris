@@ -49,7 +49,7 @@ export default function tetrisApp(state: IStore = initialState, action: any): IS
 }
 
 const overflowing = (grid: Grid): boolean => {
-    const xOffset = grid.getXOffset();
+    const { xOffset = 0 } = grid.getState();
     return grid.getCells().some(
         (r: boolean[], y: number) => {
             const rowT = r.some((c, x) => {
@@ -79,7 +79,7 @@ function moveTetromino(state: IStore, action: any): IStore {
 
     const overlapping = state.background.overlap(shiftedForeground);
 
-    const xOffset = shiftedForeground.getXOffset();
+    const { xOffset = 0 } = shiftedForeground.getState();
     
     return Object.assign({}, state, {
         foreground: (overlapping || overflowing(shiftedForeground)) ? 
@@ -97,8 +97,7 @@ function rotateTetromino(state: IStore): IStore {
 
     // get the current foreground from the state
     const { foreground, tetromino, tetrominoOrientation } = state;
-    const xOffset = foreground.getXOffset();
-    const yOffset = foreground.getYOffset();
+    const { xOffset = 0, yOffset = 0} = foreground.getState();
 
     const rotatedForeground = new Grid(
         { width: 4, height: 4 },
