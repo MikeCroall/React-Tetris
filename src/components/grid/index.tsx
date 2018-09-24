@@ -74,6 +74,16 @@ export class Grid {
     public getCells = (): boolean[][] => this.state.cells.slice(0).map(row => row.slice(0));
 
     /**
+     * Returns the x offset for this grid data
+     */
+    public getXOffset = (): number => this.state.xOffset || 0;
+
+    /**
+     * Returns the y offset for this grid data
+     */
+    public getYOffset = (): number => this.state.yOffset || 0;
+
+    /**
      * Returns a copy of the grid's cells once offsets have been applied
      */
     public getOffsetCells = (): boolean[][] => {

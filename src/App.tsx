@@ -1,7 +1,7 @@
 import * as React from 'react';
 import keydown, { Keys } from 'react-keydown';
 import { connect } from 'react-redux';
-import { Move, moveTetromino } from './actions';
+import { Move, moveTetromino, rotateTetromino } from './actions';
 import Gameboard from './components/viewport/gameboard';
 import Scoreboard from './components/viewport/scores';
 import { IStore } from './reducers/rootReducer';
@@ -11,6 +11,7 @@ interface IAppProps {
   right: () => void;
   up: () => void;
   down: () => void;
+  rotate: () => void;
 }
 
 class App extends React.Component<IAppProps> {  
@@ -31,8 +32,7 @@ class App extends React.Component<IAppProps> {
       case 'ArrowRight':  return this.props.right();
       case 'ArrowUp':     return this.props.up();
       case 'ArrowDown':   return this.props.down();
-      case 'r':
-        break;
+      case 'r':           return this.props.rotate();
     }
   }
 }
@@ -42,6 +42,7 @@ const mapDispatchToProps = (dispatch:any) => {
     down: () => dispatch(moveTetromino(Move.DOWN)),
     left: () => dispatch(moveTetromino(Move.LEFT)),
     right: () => dispatch(moveTetromino(Move.RIGHT)),
+    rotate: () => dispatch(rotateTetromino()),
     up: () => dispatch(moveTetromino(Move.UP))
   }
   return actions;

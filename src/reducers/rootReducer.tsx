@@ -7,7 +7,7 @@ import {
     UPDATE_SCORE,
  } from '../actions';
 import { Grid } from '../components/grid';
-import { buildTetriminoGrid, Tetromino } from '../components/tetromino';
+import { buildTetriminoGrid, buildTetrominoCells, getRandomTetromino, Tetromino } from '../components/tetromino';
 
 const GRID_WIDTH = 10;
 const GRID_HEIGHT = 10;
@@ -16,14 +16,18 @@ const GRID_HEIGHT = 10;
 export interface IStore {
     background: Grid,
     foreground: Grid,
-    score: number
+    score: number,
+    tetromino: Tetromino | undefined,
+    tetrominoOrientation: number,
 }
 
 // initial state, with an empty background, foreground and score
 export const initialState: IStore = {
     background: new Grid({ width: GRID_WIDTH, height: GRID_HEIGHT }),
     foreground: new Grid({ width: GRID_WIDTH, height: GRID_HEIGHT }),
-    score: 0
+    score: 0,
+    tetromino: undefined,
+    tetrominoOrientation: 0,
 }
 
 /**
@@ -75,7 +79,19 @@ function moveTetromino(state: IStore, action: any): IStore {
  */
 function rotateTetromino(state: IStore): IStore {
     // TODO: implement this
-    return state;
+
+    // get the current foreground from the state
+    const { foreground, tetromino, tetrominoOrientation } = state;
+    const xOffset = foreground.getXOffset();
+    const yOffset = foreground.getYOffset();
+
+    return Object.assign({}, state, {
+        foreground: new Grid(
+            { width: 4, height: 4 }, 
+            { cells: buildTetrominoCells(tetromino!, (tetrominoOrientation + 1) % 4), xOffset, yOffset }),
+        tetrominoOrientation: (tetrominoOrientation + 1) % 4
+    });
+
 }
 
 /**
@@ -88,8 +104,13 @@ function rotateTetromino(state: IStore): IStore {
  * @param tetromino the tetromino instance to add to the foreground
  */
 function spawnTetromino(state: IStore, action: any): IStore {
+
+    const tetromino = getRandomTetromino();
+
     return Object.assign({}, state, {
-        foreground: buildTetriminoGrid(action.tetromino)
+        foreground: buildTetriminoGrid(tetromino),
+        tetromino,
+        tetrominoOrientation: 0
     })
 }
 
@@ -100,7 +121,9 @@ function spawnTetromino(state: IStore, action: any): IStore {
 const mergeForeground = (state: IStore): IStore => ({
     background: state.background.merge(state.foreground),
     foreground: new Grid({ width: GRID_WIDTH, height: GRID_HEIGHT }),
-    score: state.score
+    score: state.score,
+    tetromino: undefined,
+    tetrominoOrientation: 0
 })
 
 /**
@@ -119,7 +142,9 @@ function updateBackground(state: IStore): IStore {
     let newState: IStore = {
         background: state.background.clone(),
         foreground: state.foreground.clone(),
-        score: state.score
+        score: state.score,
+        tetromino: state.tetromino,
+        tetrominoOrientation: state.tetrominoOrientation
     };
 
     const shiftedForeground: Grid = state.foreground.shift(1, 0);
