@@ -64,20 +64,16 @@ export class Grid {
      */
     public getDimensions = (): IGridProps => ({width: this.props.width, height: this.props.height});
 
+    public getState = (): IGridState => ({
+        cells: this.getCells(),
+        xOffset: this.state.xOffset,
+        yOffset: this.state.yOffset
+    });
+
     /** 
      * Returns a copy of the cells in this grid's state 
      */
     public getCells = (): boolean[][] => this.state.cells.slice(0).map(row => row.slice(0));
-
-    /**
-     * Returns the x offset for this grid data
-     */
-    public getXOffset = (): number => this.state.xOffset || 0;
-
-    /**
-     * Returns the y offset for this grid data
-     */
-    public getYOffset = (): number => this.state.yOffset || 0;
 
     /**
      * Returns a copy of the grid's cells once offsets have been applied
@@ -105,29 +101,26 @@ export class Grid {
 
     /**
      * Returns a copy of the grid's cells, padded to a given width and height
+     * @param width the number of values in each row of the grid
+     * @param height the number of rows in the gri
      */
-    public getPaddedCells = (w: number, h: number): boolean[][] => {
+    public getPaddedCells = (width: number, height: number): boolean[][] => {
     
         // get this grid's cell data, and its (x, y) offset from the (0, 0) origin
         const cells = this.getOffsetCells();
 
         // get the width of the grid, so that rows can be filled properly
-        const height = cells.length;
-        const width = cells[0].length;
+        const xOffset = Math.max(0, width - cells.length || 0);
+        const yOffset = Math.max(0, height - cells[0].length || 0);
 
-        const xOffset = Math.max(0, w - width || 0);
-        const yOffset = Math.max(0, h - height || 0);
-
-        const result = [
+        return [
 
             // pad the grid's rows with the x offset data
             ...cells.map(r => xOffset ? [...r.slice(0), ...Array(xOffset).fill(false)] : r),
 
             // fill in y offset rows of false data
-            ...Array(yOffset).fill(false).map(r => Array(w).fill(false))
-        ].slice(0, h);
-
-        return result;
+            ...Array(yOffset).fill(false).map(r => Array(width).fill(false))
+        ].slice(0, height);
     }
 
     /**
@@ -153,15 +146,13 @@ export class Grid {
      * @param down number of rows to add/remove from the start of the grid
      * @param right the number of columns to add/remove from the start of the grid
      */
-    public shift = (down: number, right: number): Grid => {
+    public shift = (down: number, right: number): Grid => 
 
-        const { cells } = this.state;
-        const xOffset = Math.max(0, (this.state.xOffset || 0) + right);
-        const yOffset = Math.max(0, (this.state.yOffset || 0) + down);
-
-        return new Grid(this.props, {cells, xOffset, yOffset});
-
-    }
+        new Grid(this.props, { 
+            cells: this.getCells(), 
+            xOffset: Math.max(0, (this.state.xOffset || 0) + right), 
+            yOffset: Math.max(0, (this.state.yOffset || 0) + down)
+        });
    
     /** 
      * Returns whether or not the Grids overlap 
@@ -169,54 +160,13 @@ export class Grid {
      */
     public overlap = (other: Grid): boolean => {
         
-        const { width, height } = this.props;
-
-        const adjustedOther = other.getPaddedCells(width, height);
+        const adjustedOther = other.getPaddedCells(this.props.width, this.props.height);
     
         return this.state.cells.map(
             (row, y) => row.map(
                 (cell, x) => [adjustedOther[y][x], cell].every(c => c)
             ).some(x => x)
         ).some(x => x);
-    }
-
-    
-    /** 
-     * Shifts an array of elements into the right / left with no wrapping
-     * @param arr the array to shift
-     * @param right the number of cells to add/remove when shifting
-     */
-    private horizontalShift = (arr: any[], right: number): any[]=> {
-
-        // FIXME: tidy up this function a bit
-        if ((right < 0 && arr[0]) || (right > 0 && arr[arr.length - 1])){
-            return arr;
-        }
-    
-        const sArr = [...Array(Math.abs(right)).fill(false), ...arr, ...Array(Math.abs(right)).fill(false)];
-        return right < 0 ? sArr.slice(sArr.length - arr.length) : sArr.slice(0, arr.length);
-    }
-
-    /** 
-     * Shifts a nested array of elements up / down with no wrapping
-     * @param arrs the nested array to shift
-     * @param up the number of rows to add/remove when shifting 
-     */
-    private verticalShift = (arrs: any[][], up: number): any[][] => {
-
-        const { height } = this.props;
-
-        if (up === 0){
-            return arrs;
-        }
-
-        const sArr = [
-            Array(Math.abs(height)).fill(false),
-            ...arrs, 
-            Array(Math.abs(height)).fill(false)
-        ];
-        
-        return up > 0 ? sArr.slice(sArr.length - arrs.length) : sArr.slice(0, arrs.length);
     }
     
 }
