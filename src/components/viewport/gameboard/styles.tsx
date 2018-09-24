@@ -2,26 +2,30 @@ import { StyleSheet } from 'aphrodite';
 
 export default StyleSheet.create({
     grid: {
+        alignItems: 'center',
         display: 'flex',
         flexFlow: 'column',
-        height: 500,
-        width: 500,
+        justifyContent: 'center',
+        margin: 'auto'
     },
 
     row: {
         display: 'flex',
         flexFlow: 'row',
-        height: 20
+        height: 20,
+        justifyContent: 'center'
     },
 
     cell: {
-        backgroundColor: 'gray',
-        flexBasis: 16,
+        backgroundColor: 'white',
+        border: '1px solid black',
+        flexBasis: 18,
         flexShrink: 0,
-        margin: 2
+        margin: 1
     },
 
     active: {
-        backgroundColor: 'black'
+        backgroundColor: '#3399ff',
+        boxShadow: 'inset 1px 1px #0073e6'
     }
 });

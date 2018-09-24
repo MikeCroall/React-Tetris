@@ -10,7 +10,7 @@ import { Grid } from '../components/grid';
 import { buildTetriminoGrid, buildTetrominoCells, getRandomTetromino, Tetromino } from '../components/tetromino';
 
 const GRID_WIDTH = 10;
-const GRID_HEIGHT = 10;
+const GRID_HEIGHT = 20;
 
 // interface which the store should always follow
 export interface IStore {
