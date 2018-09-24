@@ -37,12 +37,20 @@ export class Grid {
         this.state = state || {
             cells: Array(props.height).fill(false).map(row => Array(props.width).fill(false))
         };
+
+        console.log(`New Grid. 
+            Dim:    ${this.props.width}x${this.props.height},
+            Offset: (${this.state.xOffset}x${this.state.yOffset})`);
     }
 
     /**
      * Clones the Grid
      */
-    public clone = (): Grid => new Grid(this.getDimensions(), { cells: this.getCells() });
+    public clone = (): Grid => (console.log('Cloning Grid'), new Grid(this.getDimensions(), { 
+        cells: this.getCells(),
+        xOffset: this.state.xOffset, 
+        yOffset: this.state.yOffset
+    }));
 
     /**
      * Clones the Grid with a row removed, and a new one appended to the start
@@ -70,44 +78,55 @@ export class Grid {
      */
     public getOffsetCells = (): boolean[][] => {
 
+        // TODO: fix this, the code is dirty
+
         // get the width of the grid, so that rows can be filled properly
         const { width } = this.props;
 
         // get this grid's cell data, and its (x, y) offset from the (0, 0) origin
         const { cells, xOffset = 0, yOffset = 0 } = this.state;
 
-        return [
+        return yOffset ? [
 
             // fill in y offset rows of false data
             ...Array(yOffset).fill(false).map(r => Array(width + xOffset).fill(false)),
 
             // pad the grid's rows with the x offset data
-            ...cells.map(r => [Array(xOffset).fill(false), ...r])
-        ];
+            ...cells.map(r => xOffset ? [...Array(xOffset).fill(false), ...r.slice(0)] : r.slice(0))
+        ] : 
+        [...cells.map(r => xOffset ? [...Array(xOffset).fill(false), ...r.slice(0)] : r.slice(0))];
     }
 
     /**
      * Returns a copy of the grid's cells, padded to a given width and height
      */
     public getPaddedCells = (w: number, h: number): boolean[][] => {
-        
-        // get the width of the grid, so that rows can be filled properly
-        const { width, height } = this.props;
-
+    
         // get this grid's cell data, and its (x, y) offset from the (0, 0) origin
         const cells = this.getOffsetCells();
 
-        const xOffset = w - width || 0;
-        const yOffset = h - height || 0;
+        // get the width of the grid, so that rows can be filled properly
+        const height = cells.length;
+        const width = cells[0].length;
 
-        return [
+        const xOffset = Math.max(0, w - width || 0);
+        const yOffset = Math.max(0, h - height || 0);
 
-            // fill in y offset rows of false data
-            ...Array(yOffset).fill(false).map(r => Array(w).fill(false)),
+        console.log(`Getting padded cells. Aimed proportions = ${w}x${h}. 
+        Current proportions = ${width}x${height}. Offsets = ${xOffset}x${yOffset}.`)
+
+        const result = [
 
             // pad the grid's rows with the x offset data
-            ...cells.map(r => [Array(xOffset).fill(false), ...r])
-        ];
+            ...cells.map(r => xOffset ? [...r.slice(0), ...Array(xOffset).fill(false)] : r),
+
+            // fill in y offset rows of false data
+            ...Array(yOffset).fill(false).map(r => Array(w).fill(false))
+        ].slice(0, h);
+
+        console.log(`Final result = `, result);
+
+        return result;
     }
 
     /**
@@ -116,8 +135,12 @@ export class Grid {
      */    
     public merge = (other: Grid): Grid => {
 
+        console.log('Merging cells');
+
+        const { width, height } = this.props;
+
         // get the cells of the other grid, adjusted for offsets
-        const otherCells = other.getOffsetCells();
+        const otherCells = other.getPaddedCells(width, height);
 
         return new Grid(this.getDimensions(), {
             cells: this.getCells().map((row, y) => 
@@ -128,47 +151,39 @@ export class Grid {
 
     /** 
      * Shifts copied cell data up or right, returning a new Grid with this cell data
-     * @param up number of rows to add/remove from the start of the grid
+     * @param down number of rows to add/remove from the start of the grid
      * @param right the number of columns to add/remove from the start of the grid
      */
-    public shift = (up: number, right: number): Grid => {
+    public shift = (down: number, right: number): Grid => {
+
+        console.log(`Shifting by (${right}, ${down})`);
 
         const { cells } = this.state;
-        const xOffset = Math.max(0, this.state.xOffset || 0 + right);
-        const yOffset = Math.max(0, this.state.yOffset || 0 + up);
+        const xOffset = Math.max(0, (this.state.xOffset || 0) + right);
+        const yOffset = Math.max(0, (this.state.yOffset || 0) + down);
 
         return new Grid(this.props, {cells, xOffset, yOffset});
 
-        /* let cells = this.getCells();
-
-        const leftSide = cells.some(r => r[0]);
-        const rightSide = cells.some(r => r[r.length - 1]);
-        const topSide = cells[0].some(r => r);
-        const bottomSide = cells[cells.length - 1].some(r => r);
-
-        // only allowing left or right shifts if no blocking cells exist
-        if ((right > 0 && !rightSide) || (right < 0 && !leftSide)) {
-            cells = cells.map(row => this.horizontalShift(row, right));
-        }
-
-        // only allowing up or right shifts if no blocking cells exist
-        if ((up > 0 && !topSide) || (up < 0 && !bottomSide)) {
-            cells = this.verticalShift(cells, up);
-        }
-
-        return new Grid(this.getDimensions(), { cells }) */
     }
    
     /** 
      * Returns whether or not the Grids overlap 
      * @param other the Grid to compare against
      */
-    public overlap = (other: Grid): boolean =>
-        this.state.cells.map(
+    public overlap = (other: Grid): boolean => {
+
+        console.log('Overlapping cells');
+
+        const { width, height } = this.props;
+
+        const adjustedOther = other.getPaddedCells(width, height);
+    
+        return this.state.cells.map(
             (row, y) => row.map(
-                (cell, x) => [other.getCells()[y][x], cell].every(c => c)
+                (cell, x) => [adjustedOther[y][x], cell].every(c => c)
             ).some(x => x)
         ).some(x => x);
+    }
 
     
     /** 
@@ -177,6 +192,7 @@ export class Grid {
      * @param right the number of cells to add/remove when shifting
      */
     private horizontalShift = (arr: any[], right: number): any[]=> {
+
         // FIXME: tidy up this function a bit
         if ((right < 0 && arr[0]) || (right > 0 && arr[arr.length - 1])){
             return arr;
