@@ -37,7 +37,6 @@ export const initialState: IStore = {
  * TODO: this will definitely need changing / fixing
  */
 export default function tetrisApp(state: IStore = initialState, action: any): IStore {
-    console.log(action);
     switch (action.type) {
         case MOVE_TETROMINO:    return moveTetromino(state, action);
         case ROTATE_TETROMINO:  return rotateTetromino(state);
@@ -133,8 +132,6 @@ const mergeForeground = (state: IStore): IStore => ({
  */
 function updateBackground(state: IStore): IStore {
 
-    console.log('Updating background');
-
     const { width, height } = state.background.getDimensions();
 
     const currentForeground = state.foreground.getPaddedCells(width, height);
@@ -151,13 +148,11 @@ function updateBackground(state: IStore): IStore {
 
     // if the foreground touches the bottom of the screen, or collides with the background, then spawn a new tetromino
     if (currentForeground[currentForeground.length - 1].some(c => c) || state.background.overlap(shiftedForeground)){
-        console.log('FG / BG collision - merging and adding a new Tetromino');
         newState = spawnTetromino(mergeForeground(state), { tetromino: Tetromino.T });
     }
 
     // FIXME: this is disgusting, change it
     while(newState.background.getCells().some(row => row.every(c => c))){
-        console.log('deleting row');
         newState.background = newState.background.deleteRow(newState.background.getCells().findIndex(row => row.every(c => c)));
     }
     

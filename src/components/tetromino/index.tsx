@@ -50,13 +50,13 @@ const tetrominoCoordinates: Record<Tetromino, ICoordinate[][]> = {
         []),
         [0, 1].reduce((acc, x) =>
             [...acc, ...[0, 1].map(y => ({ x, y }))],
-            []),
+        []),
         [0, 1].reduce((acc, x) =>
             [...acc, ...[0, 1].map(y => ({ x, y }))],
-            []),
+        []),
         [0, 1].reduce((acc, x) =>
             [...acc, ...[0, 1].map(y => ({ x, y }))],
-            [])
+        [])
     ],
     t: [
         [{ x: 1, y: 0 }, ..._.range(3).map(x => ({ x, y: 1 }))],

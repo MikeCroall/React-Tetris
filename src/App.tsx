@@ -16,7 +16,6 @@ interface IAppProps {
 
 class App extends React.Component<IAppProps> {  
   public render() {
-    console.log('App props', this.props.left);
     return (
       <div className="App">
         <Scoreboard />

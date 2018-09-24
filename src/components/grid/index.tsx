@@ -37,10 +37,6 @@ export class Grid {
         this.state = state || {
             cells: Array(props.height).fill(false).map(row => Array(props.width).fill(false))
         };
-
-        console.log(`New Grid. 
-            Dim:    ${this.props.width}x${this.props.height},
-            Offset: (${this.state.xOffset}x${this.state.yOffset})`);
     }
 
     /**
@@ -122,9 +118,6 @@ export class Grid {
         const xOffset = Math.max(0, w - width || 0);
         const yOffset = Math.max(0, h - height || 0);
 
-        console.log(`Getting padded cells. Aimed proportions = ${w}x${h}. 
-        Current proportions = ${width}x${height}. Offsets = ${xOffset}x${yOffset}.`)
-
         const result = [
 
             // pad the grid's rows with the x offset data
@@ -134,8 +127,6 @@ export class Grid {
             ...Array(yOffset).fill(false).map(r => Array(w).fill(false))
         ].slice(0, h);
 
-        console.log(`Final result = `, result);
-
         return result;
     }
 
@@ -144,8 +135,6 @@ export class Grid {
      * @param other the other Grid to merge data with
      */    
     public merge = (other: Grid): Grid => {
-
-        console.log('Merging cells');
 
         const { width, height } = this.props;
 
@@ -166,8 +155,6 @@ export class Grid {
      */
     public shift = (down: number, right: number): Grid => {
 
-        console.log(`Shifting by (${right}, ${down})`);
-
         const { cells } = this.state;
         const xOffset = Math.max(0, (this.state.xOffset || 0) + right);
         const yOffset = Math.max(0, (this.state.yOffset || 0) + down);
@@ -181,9 +168,7 @@ export class Grid {
      * @param other the Grid to compare against
      */
     public overlap = (other: Grid): boolean => {
-
-        console.log('Overlapping cells');
-
+        
         const { width, height } = this.props;
 
         const adjustedOther = other.getPaddedCells(width, height);
