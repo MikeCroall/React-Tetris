@@ -60,13 +60,23 @@ export default function tetrisApp(state: IStore = initialState, action: any): IS
  * @returns the new state of the store, with the foreground change
  */
 function moveTetromino(state: IStore, action: any): IStore {
+
     const shiftedForeground: Grid = state.foreground.shift(
         action.move === 'U' ? -1 : (action.move === 'D' ? 1 : 0),
         action.move === 'R' ? 1 : (action.move === 'L' ? -1 : 0)
     );
 
     const overlapping = state.background.overlap(shiftedForeground);
-    const overflowing = ((shiftedForeground.getDimensions().width + shiftedForeground.getXOffset()) > GRID_WIDTH + 1);
+
+    const xOffset = shiftedForeground.getXOffset();
+    
+    const overflowing = shiftedForeground.getCells().some( 
+        (r: boolean[], y: number) => { 
+            const rowT = r.some((c, x) => {
+                return c && (x + xOffset >= GRID_WIDTH);
+            }); 
+            return rowT;
+        });
 
     return Object.assign({}, state, {
         foreground: (overlapping || overflowing) ? 
