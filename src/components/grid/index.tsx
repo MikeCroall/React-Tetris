@@ -42,7 +42,7 @@ export class Grid {
     /**
      * Clones the Grid
      */
-    public clone = (): Grid => (console.log('Cloning Grid'), new Grid(this.getDimensions(), { 
+    public clone = (): Grid => (new Grid(this.getDimensions(), { 
         cells: this.getCells(),
         xOffset: this.state.xOffset, 
         yOffset: this.state.yOffset

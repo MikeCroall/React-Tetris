@@ -65,8 +65,11 @@ function moveTetromino(state: IStore, action: any): IStore {
         action.move === 'R' ? 1 : (action.move === 'L' ? -1 : 0)
     );
 
+    const overlapping = state.background.overlap(shiftedForeground);
+    const overflowing = ((shiftedForeground.getDimensions().width + shiftedForeground.getXOffset()) > GRID_WIDTH + 1);
+
     return Object.assign({}, state, {
-        foreground: state.background.overlap(shiftedForeground) ? 
+        foreground: (overlapping || overflowing) ? 
             state.foreground : shiftedForeground
     });
 }
