@@ -48,6 +48,17 @@ export default function tetrisApp(state: IStore = initialState, action: any): IS
     }
 }
 
+const overflowing = (grid: Grid): boolean => {
+    const xOffset = grid.getXOffset();
+    return grid.getCells().some(
+        (r: boolean[], y: number) => {
+            const rowT = r.some((c, x) => {
+                return c && (x + xOffset >= GRID_WIDTH);
+            });
+            return rowT;
+        });
+}
+
 
 /**
  * USER-INPUT REDUCERS
@@ -60,13 +71,18 @@ export default function tetrisApp(state: IStore = initialState, action: any): IS
  * @returns the new state of the store, with the foreground change
  */
 function moveTetromino(state: IStore, action: any): IStore {
+
     const shiftedForeground: Grid = state.foreground.shift(
         action.move === 'U' ? -1 : (action.move === 'D' ? 1 : 0),
         action.move === 'R' ? 1 : (action.move === 'L' ? -1 : 0)
     );
 
+    const overlapping = state.background.overlap(shiftedForeground);
+
+    const xOffset = shiftedForeground.getXOffset();
+    
     return Object.assign({}, state, {
-        foreground: state.background.overlap(shiftedForeground) ? 
+        foreground: (overlapping || overflowing(shiftedForeground)) ? 
             state.foreground : shiftedForeground
     });
 }
@@ -84,11 +100,15 @@ function rotateTetromino(state: IStore): IStore {
     const xOffset = foreground.getXOffset();
     const yOffset = foreground.getYOffset();
 
+    const rotatedForeground = new Grid(
+        { width: 4, height: 4 },
+        { cells: buildTetrominoCells(tetromino!, (tetrominoOrientation + 1) % 4), xOffset, yOffset });
+
+    const rotated = !overflowing(rotatedForeground);
+
     return Object.assign({}, state, {
-        foreground: new Grid(
-            { width: 4, height: 4 }, 
-            { cells: buildTetrominoCells(tetromino!, (tetrominoOrientation + 1) % 4), xOffset, yOffset }),
-        tetrominoOrientation: (tetrominoOrientation + 1) % 4
+        foreground: rotated ? rotatedForeground: foreground,
+        tetrominoOrientation: rotated ? (tetrominoOrientation + 1) % 4 : tetrominoOrientation
     });
 
 }
