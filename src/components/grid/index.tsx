@@ -116,7 +116,8 @@ export class Grid {
      */    
     public merge = (other: Grid): Grid => {
 
-        const otherCells = other.getCells();
+        // get the cells of the other grid, adjusted for offsets
+        const otherCells = other.getOffsetCells();
 
         return new Grid(this.getDimensions(), {
             cells: this.getCells().map((row, y) => 
@@ -132,7 +133,13 @@ export class Grid {
      */
     public shift = (up: number, right: number): Grid => {
 
-        let cells = this.getCells();
+        const { cells } = this.state;
+        const xOffset = Math.max(0, this.state.xOffset || 0 + right);
+        const yOffset = Math.max(0, this.state.yOffset || 0 + up);
+
+        return new Grid(this.props, {cells, xOffset, yOffset});
+
+        /* let cells = this.getCells();
 
         const leftSide = cells.some(r => r[0]);
         const rightSide = cells.some(r => r[r.length - 1]);
@@ -149,7 +156,7 @@ export class Grid {
             cells = this.verticalShift(cells, up);
         }
 
-        return new Grid(this.getDimensions(), { cells })
+        return new Grid(this.getDimensions(), { cells }) */
     }
    
     /** 

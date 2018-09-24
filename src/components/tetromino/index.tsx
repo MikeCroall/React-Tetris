@@ -63,10 +63,10 @@ const tetrominoCoordinates: Record<Tetromino, ICoordinate[][]> = {
  * Creates a grid containing this Tetromino at the top
  * @param tetromino the Tetromino enum instance
  */
-export const buildTetriminoGrid = (tetromino: Tetromino, width: number, height: number): Grid => {
+export const buildTetriminoGrid = (tetromino: Tetromino): Grid => {
 
     // create placeholder cells
-    const cells = Array(height).fill(false).map(row => Array(width).fill(false));
+    const cells = Array(4).fill(false).map(row => Array(4).fill(false));
 
     // add the tetromino cells onto it
     tetrominoCoordinates[tetromino][0].map(c => { 
@@ -74,6 +74,6 @@ export const buildTetriminoGrid = (tetromino: Tetromino, width: number, height: 
     });
 
     // create a new Grid instance with these cells
-    return new Grid({ width, height }, { cells });
+    return new Grid({ width: 4, height: 4 }, { cells });
 
 }

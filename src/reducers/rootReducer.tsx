@@ -89,7 +89,7 @@ function rotateTetromino(state: IStore): IStore {
  */
 function spawnTetromino(state: IStore, action: any): IStore {
     return Object.assign({}, state, {
-        foreground: buildTetriminoGrid(action.tetromino, width, height)
+        foreground: buildTetriminoGrid(action.tetromino)
     })
 }
 
