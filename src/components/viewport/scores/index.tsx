@@ -1,6 +1,8 @@
+import { css } from 'aphrodite';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { IStore } from '../../../reducers/rootReducer';
+import styles from './styles';
 
 export interface IScoreboardProps {
     score: number
@@ -8,13 +10,9 @@ export interface IScoreboardProps {
 
 export class Scoreboard extends React.Component<IScoreboardProps> {
 
-    constructor(props: IScoreboardProps){
-        super(props);
-    }
-
     public render() {
         return (
-            <p> {this.props.score} </p>
+            <p className={css(styles.scores)}> {this.props.score} </p>
         );
     }
 }

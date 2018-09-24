@@ -1,3 +1,4 @@
+import { css } from 'aphrodite';
 import * as React from 'react';
 import keydown, { Keys } from 'react-keydown';
 import { connect } from 'react-redux';
@@ -5,6 +6,7 @@ import { Move, moveTetromino, rotateTetromino } from './actions';
 import Gameboard from './components/viewport/gameboard';
 import Scoreboard from './components/viewport/scores';
 import { IStore } from './reducers/rootReducer';
+import styles from './styles';
 
 interface IAppProps {
   left: () => void;
@@ -17,7 +19,7 @@ interface IAppProps {
 class App extends React.Component<IAppProps> {  
   public render() {
     return (
-      <div className="App">
+      <div className={css(styles.app)}>
         <Scoreboard />
         <Gameboard />
       </div>
