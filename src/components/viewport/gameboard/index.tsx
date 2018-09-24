@@ -16,10 +16,6 @@ export interface IGameboardProps {
  */
 export class Gameboard extends React.Component<IGameboardProps> {
 
-    constructor(props: IGameboardProps){
-        super(props);
-    }
-
     public render() {
         return (
             <div className={css(styles.grid)}>

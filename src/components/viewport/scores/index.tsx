@@ -19,6 +19,6 @@ export class Scoreboard extends React.Component<IScoreboardProps> {
     }
 }
 
-export default connect( (state: IStore) => (console.log(state), {
+export default connect( (state: IStore) => ({
     score: state.score
 }))(Scoreboard);

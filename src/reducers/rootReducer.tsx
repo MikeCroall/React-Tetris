@@ -9,8 +9,8 @@ import {
 import { Grid } from '../components/grid';
 import { buildTetriminoGrid, Tetromino } from '../components/tetromino';
 
-const width = 10;
-const height = 10;
+const GRID_WIDTH = 10;
+const GRID_HEIGHT = 10;
 
 // interface which the store should always follow
 export interface IStore {
@@ -21,8 +21,8 @@ export interface IStore {
 
 // initial state, with an empty background, foreground and score
 export const initialState: IStore = {
-    background: new Grid({ width, height }),
-    foreground: new Grid({ width, height }),
+    background: new Grid({ width: GRID_WIDTH, height: GRID_HEIGHT }),
+    foreground: new Grid({ width: GRID_WIDTH, height: GRID_HEIGHT }),
     score: 0
 }
 
@@ -99,7 +99,7 @@ function spawnTetromino(state: IStore, action: any): IStore {
  */
 const mergeForeground = (state: IStore): IStore => ({
     background: state.background.merge(state.foreground),
-    foreground: new Grid({ width, height }),
+    foreground: new Grid({ width: GRID_WIDTH, height: GRID_HEIGHT }),
     score: state.score
 })
 
