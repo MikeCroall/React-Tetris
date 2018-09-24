@@ -30,6 +30,8 @@ const tetrominoCoordinates: Record<Tetromino, ICoordinate[][]> = {
     ], 
     backZ: [
         [...[1, 2].map(x => ({ x, y: 0 })), ...[0, 1].map(x => ({ x, y: 1 }))],
+        [...[1, 2].map(y => ({ x: 1, y })), ...[0, 1].map(y => ({ x: 0, y }))],
+        [...[1, 2].map(x => ({ x, y: 0 })), ...[0, 1].map(x => ({ x, y: 1 }))],
         [...[1, 2].map(y => ({ x: 1, y })), ...[0, 1].map(y => ({ x: 0, y }))]
     ],
     l: [
@@ -65,6 +67,8 @@ const tetrominoCoordinates: Record<Tetromino, ICoordinate[][]> = {
         [{ x: 0, y: 1 }, ..._.range(3).map(y => ({ x: 1, y }))]
     ],
     z: [
+        [...[1, 2].map(x => ({ x, y: 1 })), ...[0, 1].map(x => ({ x, y: 0 }))],
+        [...[1, 2].map(y => ({ x: 0, y })), ...[0, 1].map(y => ({ x: 1, y }))],
         [...[1, 2].map(x => ({ x, y: 1 })), ...[0, 1].map(x => ({ x, y: 0 }))],
         [...[1, 2].map(y => ({ x: 0, y })), ...[0, 1].map(y => ({ x: 1, y }))]
     ]
