@@ -58,7 +58,7 @@ export default function tetrisApp(state: IStore = initialState, action: any): IS
  */
 function moveTetromino(state: IStore, action: any): IStore {
     const shiftedForeground: Grid = state.foreground.shift(
-        action.move === 'U' ? 1 : (action.move === 'D' ? -1 : 0),
+        action.move === 'U' ? -1 : (action.move === 'D' ? 1 : 0),
         action.move === 'R' ? 1 : (action.move === 'L' ? -1 : 0)
     );
 
@@ -109,7 +109,12 @@ const mergeForeground = (state: IStore): IStore => ({
  * FIXME: fix this
  */
 function updateBackground(state: IStore): IStore {
-    const lastRow = state.foreground.getCells();
+
+    console.log('Updating background');
+
+    const { width, height } = state.background.getDimensions();
+
+    const currentForeground = state.foreground.getPaddedCells(width, height);
 
     let newState: IStore = {
         background: state.background.clone(),
@@ -117,10 +122,11 @@ function updateBackground(state: IStore): IStore {
         score: state.score
     };
 
-    const shiftedForeground: Grid = state.foreground.shift(-1, 0);
+    const shiftedForeground: Grid = state.foreground.shift(1, 0);
 
-    // handling merging the foreground and background
-    if (lastRow[lastRow.length - 1].some(c => c) || state.background.overlap(shiftedForeground)){
+    // if the foreground touches the bottom of the screen, or collides with the background, then spawn a new tetromino
+    if (currentForeground[currentForeground.length - 1].some(c => c) || state.background.overlap(shiftedForeground)){
+        console.log('FG / BG collision - merging and adding a new Tetromino');
         newState = spawnTetromino(mergeForeground(state), { tetromino: Tetromino.T });
     }
 
