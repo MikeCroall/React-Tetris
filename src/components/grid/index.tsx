@@ -109,10 +109,11 @@ export class Grid {
         // get this grid's cell data, and its (x, y) offset from the (0, 0) origin
         const cells = this.getOffsetCells();
 
+        
         // get the width of the grid, so that rows can be filled properly
-        const xOffset = Math.max(0, width - cells.length || 0);
-        const yOffset = Math.max(0, height - cells[0].length || 0);
-
+        const xOffset = Math.max(0, width - cells[0].length || 0);
+        const yOffset = Math.max(0, height - cells.length || 0);
+        
         return [
 
             // pad the grid's rows with the x offset data
