@@ -151,9 +151,7 @@ const mergeForeground = (state: IStore): IStore => ({
  */
 function updateBackground(state: IStore): IStore {
 
-    const { width, height } = state.background.getDimensions();
-
-    const currentForeground = state.foreground.getPaddedCells(width, height);
+    const currentForeground = state.foreground.getPaddedCells(state.background.getDimensions());
 
     let newState: IStore = {
         background: state.background.clone(),

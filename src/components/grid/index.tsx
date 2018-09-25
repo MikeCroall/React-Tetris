@@ -1,7 +1,7 @@
 /** 
  * The number of cells wide and high the grid is
  */
-interface IGridProps {
+interface IDimensions {
     width: number,
     height: number
 }
@@ -20,8 +20,6 @@ interface IGridState {
  */
 export class Grid {
 
-    // FIXME: this used to be a react component, so these will need changing
-    private props: IGridProps;
     private state: IGridState;
 
     /**
@@ -29,13 +27,11 @@ export class Grid {
      * @param props the width and height props
      * @param state the cell data
      */
-    constructor(props: IGridProps, state? : IGridState) {
-
-        this.props = props;
+    constructor(dimensions: IDimensions, state? : IGridState) {
 
         // use state parameter if provided, otherwise fill with nulls
         this.state = state || {
-            cells: Array(props.height).fill(false).map(row => Array(props.width).fill(false))
+            cells: Array(dimensions.height).fill(false).map(row => Array(dimensions.width).fill(false))
         };
     }
 
@@ -53,7 +49,7 @@ export class Grid {
      */
     public deleteRow = (y: number): Grid => new Grid(this.getDimensions(), {
         cells: [
-            Array(this.props.width).fill(false), 
+            Array(this.getDimensions().width).fill(false), 
             ...this.getCells().slice(0, y), 
             ...this.getCells().slice(y + 1)
         ]
@@ -62,7 +58,7 @@ export class Grid {
     /** 
      * Returns the (width, height) dimensions of this grid 
      */
-    public getDimensions = (): IGridProps => ({width: this.props.width, height: this.props.height});
+    public getDimensions = (): IDimensions => ({width: this.getCells()[0].length, height: this.getCells().length});
 
     public getState = (): IGridState => ({
         cells: this.getCells(),
@@ -83,7 +79,7 @@ export class Grid {
         // TODO: fix this, the code is dirty
 
         // get the width of the grid, so that rows can be filled properly
-        const { width } = this.props;
+        const { width } = this.getDimensions();
 
         // get this grid's cell data, and its (x, y) offset from the (0, 0) origin
         const { cells, xOffset = 0, yOffset = 0 } = this.state;
@@ -104,15 +100,14 @@ export class Grid {
      * @param width the number of values in each row of the grid
      * @param height the number of rows in the gri
      */
-    public getPaddedCells = (width: number, height: number): boolean[][] => {
+    public getPaddedCells = (otherDimensions: IDimensions): boolean[][] => {
     
         // get this grid's cell data, and its (x, y) offset from the (0, 0) origin
         const cells = this.getOffsetCells();
-
         
         // get the width of the grid, so that rows can be filled properly
-        const xOffset = Math.max(0, width - cells[0].length || 0);
-        const yOffset = Math.max(0, height - cells.length || 0);
+        const xOffset = Math.max(0, otherDimensions.width - cells[0].length || 0);
+        const yOffset = Math.max(0, otherDimensions.height - cells.length || 0);
         
         return [
 
@@ -120,8 +115,8 @@ export class Grid {
             ...cells.map(r => xOffset ? [...r.slice(0), ...Array(xOffset).fill(false)] : r),
 
             // fill in y offset rows of false data
-            ...Array(yOffset).fill(false).map(r => Array(width).fill(false))
-        ].slice(0, height);
+            ...Array(yOffset).fill(false).map(r => Array(otherDimensions.width).fill(false))
+        ].slice(0, otherDimensions.height );
     }
 
     /**
@@ -130,10 +125,8 @@ export class Grid {
      */    
     public merge = (other: Grid): Grid => {
 
-        const { width, height } = this.props;
-
         // get the cells of the other grid, adjusted for offsets
-        const otherCells = other.getPaddedCells(width, height);
+        const otherCells = other.getPaddedCells(this.getDimensions());
 
         return new Grid(this.getDimensions(), {
             cells: this.getCells().map((row, y) => 
@@ -144,12 +137,12 @@ export class Grid {
 
     /** 
      * Shifts copied cell data up or right, returning a new Grid with this cell data
-     * @param down number of rows to add/remove from the start of the grid
+     * @param down number of rows to add/remove from the start of the grid  
      * @param right the number of columns to add/remove from the start of the grid
      */
     public shift = (down: number, right: number): Grid => 
 
-        new Grid(this.props, { 
+        new Grid(this.getDimensions(), { 
             cells: this.getCells(), 
             xOffset: Math.max(0, (this.state.xOffset || 0) + right), 
             yOffset: Math.max(0, (this.state.yOffset || 0) + down)
@@ -161,7 +154,7 @@ export class Grid {
      */
     public overlap = (other: Grid): boolean => {
         
-        const adjustedOther = other.getPaddedCells(this.props.width, this.props.height);
+        const adjustedOther = other.getPaddedCells(this.getDimensions());
     
         return this.state.cells.map(
             (row, y) => row.map(
