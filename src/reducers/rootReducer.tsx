@@ -48,10 +48,10 @@ export default function tetrisApp(state: IStore = initialState, action: any): IS
 }
 
 /**
- * Returns whether or not a grid is currently overflowing the global grid dimensions
+ * Returns whether or not a grid is currently overflowing the global grid width
  * @param grid the Grid instance to check for overflow
  */
-const overflowing = (grid: Grid): boolean => {
+const horizontalOverflow = (grid: Grid): boolean => {
     const { xOffset = 0 } = grid.getState();
     return grid.getCells().some(
         (r: boolean[]) => 
@@ -60,6 +60,18 @@ const overflowing = (grid: Grid): boolean => {
         )
     );
 }
+
+/**
+ * Returns whether or not the grid is currently overflowing the global grid height
+ * @param grid the Grid instance to check for overflow
+ */
+const verticalOverflow = (grid: Grid): boolean => grid.getPaddedCells({ width: GRID_WIDTH, height: GRID_HEIGHT }).pop()!.some(c => c);
+
+/**
+ * Returns whether or not the grid is currently overflowing the global grid dimensions
+ * @param grid the Grid instance to check for overflow
+ */
+const overflow = (grid: Grid): boolean => horizontalOverflow(grid) || verticalOverflow(grid);
 
 
 /**
@@ -82,7 +94,7 @@ function moveTetromino(state: IStore, action: any): IStore {
 
     // if the shifted foreground overlaps the background, or overflows, then don't use it
     return Object.assign({}, state, {
-        foreground: (state.background.overlap(shiftedForeground) || overflowing(shiftedForeground)) ? 
+        foreground: (state.background.overlap(shiftedForeground) || horizontalOverflow(shiftedForeground) || verticalOverflow(state.foreground)) ? 
             state.foreground : shiftedForeground
     });
 }
@@ -104,7 +116,7 @@ function rotateTetromino(state: IStore): IStore {
         { cells: buildTetrominoCells(tetromino!, (tetrominoOrientation + 1) % 4), xOffset, yOffset });
 
     // the foreground should be rotated if it doesn't cause an overflow
-    const rotated = !overflowing(rotatedForeground);
+    const rotated = !overflow(rotatedForeground);
 
     // if the rotation is allowed, then use the new rotate foreground and increment the orientation
     return Object.assign({}, state, {
