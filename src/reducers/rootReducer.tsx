@@ -33,14 +33,13 @@ export const initialState: IStore = {
 /**
  * Takes action payload, gets modified state using relevant function
  * @param state the current state of the store
- * @param action payload describing required reducer 
- * TODO: this will definitely need changing / fixing
+ * @param action payload describing required reducer
  */
 export default function tetrisApp(state: IStore = initialState, action: any): IStore {
     switch (action.type) {
         case MOVE_TETROMINO:    return moveTetromino(state, action);
         case ROTATE_TETROMINO:  return rotateTetromino(state);
-        case SPAWN_TETROMINO:   return spawnTetromino(state, action);
+        case SPAWN_TETROMINO:   return spawnTetromino(state);
         case MERGE_FOREGROUND:  return mergeForeground(state);
         case UPDATE_BACKGROUND: return updateBackground(state);
         case UPDATE_SCORE:      return updateScore(state, action);
@@ -48,16 +47,31 @@ export default function tetrisApp(state: IStore = initialState, action: any): IS
     }
 }
 
-const overflowing = (grid: Grid): boolean => {
-    const xOffset = grid.getXOffset();
+/**
+ * Returns whether or not a grid is currently overflowing the global grid width
+ * @param grid the Grid instance to check for overflow
+ */
+const horizontalOverflow = (grid: Grid): boolean => {
+    const { xOffset = 0 } = grid.getState();
     return grid.getCells().some(
-        (r: boolean[], y: number) => {
-            const rowT = r.some((c, x) => {
-                return c && (x + xOffset >= GRID_WIDTH);
-            });
-            return rowT;
-        });
+        (r: boolean[]) => 
+            r.some((c: boolean, x: number) => 
+                c && (x + xOffset >= GRID_WIDTH)
+        )
+    );
 }
+
+/**
+ * Returns whether or not the grid is currently overflowing the global grid height
+ * @param grid the Grid instance to check for overflow
+ */
+const verticalOverflow = (grid: Grid): boolean => grid.getPaddedCells({ width: GRID_WIDTH, height: GRID_HEIGHT }).pop()!.some(c => c);
+
+/**
+ * Returns whether or not the grid is currently overflowing the global grid dimensions
+ * @param grid the Grid instance to check for overflow
+ */
+const overflow = (grid: Grid): boolean => horizontalOverflow(grid) || verticalOverflow(grid);
 
 
 /**
@@ -72,17 +86,15 @@ const overflowing = (grid: Grid): boolean => {
  */
 function moveTetromino(state: IStore, action: any): IStore {
 
+    // shift the foreground (change x or y offsets) based on the action move (key) input
     const shiftedForeground: Grid = state.foreground.shift(
         action.move === 'U' ? -1 : (action.move === 'D' ? 1 : 0),
         action.move === 'R' ? 1 : (action.move === 'L' ? -1 : 0)
     );
 
-    const overlapping = state.background.overlap(shiftedForeground);
-
-    const xOffset = shiftedForeground.getXOffset();
-    
+    // if the shifted foreground overlaps the background, or overflows, then don't use it
     return Object.assign({}, state, {
-        foreground: (overlapping || overflowing(shiftedForeground)) ? 
+        foreground: (state.background.overlap(shiftedForeground) || horizontalOverflow(shiftedForeground) || verticalOverflow(state.foreground)) ? 
             state.foreground : shiftedForeground
     });
 }
@@ -93,19 +105,20 @@ function moveTetromino(state: IStore, action: any): IStore {
  * @param the new state of the store, with the foreground rotated
  */
 function rotateTetromino(state: IStore): IStore {
-    // TODO: implement this
 
     // get the current foreground from the state
     const { foreground, tetromino, tetrominoOrientation } = state;
-    const xOffset = foreground.getXOffset();
-    const yOffset = foreground.getYOffset();
+    const { xOffset = 0, yOffset = 0} = foreground.getState();
 
+    // create a new foreground grid, by rotating the Tetromino, and maintaing the {x, y} offsets
     const rotatedForeground = new Grid(
         { width: 4, height: 4 },
         { cells: buildTetrominoCells(tetromino!, (tetrominoOrientation + 1) % 4), xOffset, yOffset });
 
-    const rotated = !overflowing(rotatedForeground);
+    // the foreground should be rotated if it doesn't cause an overflow
+    const rotated = !overflow(rotatedForeground);
 
+    // if the rotation is allowed, then use the new rotate foreground and increment the orientation
     return Object.assign({}, state, {
         foreground: rotated ? rotatedForeground: foreground,
         tetrominoOrientation: rotated ? (tetrominoOrientation + 1) % 4 : tetrominoOrientation
@@ -122,10 +135,12 @@ function rotateTetromino(state: IStore): IStore {
  * @param state the current state of the store
  * @param tetromino the tetromino instance to add to the foreground
  */
-function spawnTetromino(state: IStore, action: any): IStore {
+function spawnTetromino(state: IStore): IStore {
 
+    // spawn a random Tetromino for us to use
     const tetromino = getRandomTetromino();
 
+    // build a new Tetromino grid for the foreground, and save the Tetromino instance to the state
     return Object.assign({}, state, {
         foreground: buildTetriminoGrid(tetromino),
         tetromino,
@@ -152,9 +167,7 @@ const mergeForeground = (state: IStore): IStore => ({
  */
 function updateBackground(state: IStore): IStore {
 
-    const { width, height } = state.background.getDimensions();
-
-    const currentForeground = state.foreground.getPaddedCells(width, height);
+    const currentForeground = state.foreground.getPaddedCells(state.background.getDimensions());
 
     let newState: IStore = {
         background: state.background.clone(),
@@ -168,7 +181,7 @@ function updateBackground(state: IStore): IStore {
 
     // if the foreground touches the bottom of the screen, or collides with the background, then spawn a new tetromino
     if (currentForeground[currentForeground.length - 1].some(c => c) || state.background.overlap(shiftedForeground)){
-        newState = spawnTetromino(mergeForeground(state), { tetromino: Tetromino.T });
+        newState = spawnTetromino(mergeForeground(state));
     }
 
     let combo = 0;
@@ -176,12 +189,10 @@ function updateBackground(state: IStore): IStore {
     // FIXME: this is disgusting, change it
     while(newState.background.getCells().some(row => row.every(c => c))){
         newState.background = newState.background.deleteRow(newState.background.getCells().findIndex(row => row.every(c => c)));
-        combo = combo ? combo * 2 : 100;   
+        combo = combo ? (combo + (combo * 2)) : 100;   
     }
-
-    newState.score += combo;
     
-    return newState;
+    return Object.assign({}, newState, updateScore(newState, { type: UPDATE_SCORE, score: combo }));
 }
 
 /**
@@ -191,6 +202,6 @@ function updateBackground(state: IStore): IStore {
  */
 function updateScore(state: IStore, action: any): IStore {
     return Object.assign({}, state, {
-        score: action.score
+        score: action.score + state.score
     });
 }
