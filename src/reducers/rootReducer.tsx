@@ -19,6 +19,7 @@ export const GRID_HEIGHT = 20;
 export interface IStore {
     background: Grid,
     foreground: Grid,
+    lines: number,
     score: number,
     tetromino: Tetromino | undefined,
     tetrominoOrientation: number,
@@ -28,6 +29,7 @@ export interface IStore {
 export const initialState: IStore = {
     background: new Grid({ width: GRID_WIDTH, height: GRID_HEIGHT }),
     foreground: new Grid({ width: GRID_WIDTH, height: GRID_HEIGHT }),
+    lines: 0,
     score: 0,
     tetromino: undefined,
     tetrominoOrientation: 0,
