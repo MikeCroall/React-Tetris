@@ -5,18 +5,23 @@ import { IStore } from '../../../reducers/rootReducer';
 import styles from './styles';
 
 export interface IScoreboardProps {
-    score: number
+    lines: number;
+    score: number;
 }
 
 export class Scoreboard extends React.Component<IScoreboardProps> {
 
     public render() {
         return (
-            <p className={css(styles.scores)}> {this.props.score} </p>
+            <div>
+                <p className={css(styles.scores)}> {this.props.score} </p>
+                <p className={css(styles.scores)}> {this.props.lines} </p>
+            </div>
         );
     }
 }
 
 export default connect( (state: IStore) => ({
+    lines: state.lines,
     score: state.score
 }))(Scoreboard);

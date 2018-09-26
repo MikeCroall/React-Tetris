@@ -31,6 +31,7 @@ export function spawnTetrominoReducer(state: IStore): IStore {
 export const mergeForegroundReducer = (state: IStore): IStore => ({
     background: state.background.merge(state.foreground),
     foreground: new Grid({ width: GRID_WIDTH, height: GRID_HEIGHT }),
+    lines: state.lines,
     score: state.score,
     tetromino: undefined,
     tetrominoOrientation: 0
@@ -48,6 +49,7 @@ export function updateBackgroundReducer(state: IStore): IStore {
     let newState: IStore = {
         background: state.background.clone(),
         foreground: state.foreground.clone(),
+        lines: state.lines,
         score: state.score,
         tetromino: state.tetromino,
         tetrominoOrientation: state.tetrominoOrientation
@@ -68,6 +70,7 @@ export function updateBackgroundReducer(state: IStore): IStore {
 
     // FIXME: this is disgusting, change it
     while (newState.background.getCells().some(row => row.every(c => c))) {
+        newState.lines += 1
         newState.background = newState.background.deleteRow(newState.background.getCells().findIndex(row => row.every(c => c)));
         combo = combo ? (combo + (combo * 2)) : 100;
     }
