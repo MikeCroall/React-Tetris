@@ -1,6 +1,9 @@
 import { Grid } from "../../components/grid";
 import { GRID_HEIGHT, GRID_WIDTH } from "../../reducers/rootReducer";
 
+export const endCondition = (foreground: Grid, background: Grid): boolean => (foreground.getState().yOffset === undefined || foreground.getState().yOffset === 1 ) && background.overlap(foreground);
+
+
 /**
  * Returns whether or not a grid is currently overflowing the global grid width
  * @param grid the Grid instance to check for overflow

@@ -1,7 +1,10 @@
 import { UPDATE_SCORE } from '../actions';
 import { Grid } from '../components/grid';
 import { buildTetriminoGrid, getRandomTetromino } from '../components/tetromino';
-import { GRID_HEIGHT, GRID_WIDTH, IStore } from './rootReducer';
+import { endCondition } from '../helpers/grid';
+import { GRID_HEIGHT, GRID_WIDTH, initialState, IStore } from './rootReducer';
+
+export const resetStateReducer = (): IStore => spawnTetrominoReducer(initialState);
 
 /**
  * Modify state for adding a new tetromino (foreground grid)
@@ -51,6 +54,10 @@ export function updateBackgroundReducer(state: IStore): IStore {
     };
 
     const shiftedForeground: Grid = state.foreground.shift(1, 0);
+
+    if (endCondition(shiftedForeground, state.background)) {
+        return resetStateReducer();
+    }
 
     // if the foreground touches the bottom of the screen, or collides with the background, then spawn a new tetromino
     if (currentForeground[currentForeground.length - 1].some(c => c) || state.background.overlap(shiftedForeground)) {
