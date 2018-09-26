@@ -35,11 +35,11 @@ const tetrominoCoordinates: Record<Tetromino, ICoordinate[][]> = {
         [...[1, 2].map(y => ({ x: 1, y })), ...[0, 1].map(y => ({ x: 0, y }))]
     ],
     l: [
+        [{ x: 1, y: 2 }, ..._.range(3).map(y => ({ x: 0, y }))],
         [{ x: 2, y: 0 }, ..._.range(3).map(x => ({ x, y: 1 }))],
-        [{ x: 2, y: 2 }, ..._.range(3).map(y => ({ x: 1, y }))],
-        [{ x: 0, y: 2 }, ..._.range(3).map(x => ({ x, y: 1 }))],
-        [{ x: 0, y: 0 }, ..._.range(3).map(y => ({ x: 1, y }))]
-    ],
+        [{ x: 0, y: 0 }, ..._.range(3).map(y => ({ x: 1, y }))],
+        [{ x: 0, y: 1 }, ..._.range(3).map(x => ({ x, y: 0 }))],
+    ].reverse(),
     longBoy: [
         _.range(4).map(x => ({ x, y: 0 })),
         _.range(4).map(y => ({ x: 0, y })),
