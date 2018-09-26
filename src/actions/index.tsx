@@ -7,6 +7,7 @@ export const MOVE_TETROMINO = 'MOVE_TETROMINO';         // move the tetromino   
 export const ROTATE_TETROMINO = 'ROTATE_TETROMINO';     // rotate the tetromino (clockwise)
 
 /** GAME ENGINE */
+export const RESET_STATE = 'RESET_STATE';               // resets the background, foreground etc. to the initial state
 export const SPAWN_TETROMINO = 'SPAWN_TETROMINO';       // spawns a tetromino onto the foreground
 export const MERGE_FOREGROUND = 'MERGE_FOREGROUND';     // merges the fore-, and back-, ground
 export const UPDATE_BACKGROUND = 'UPDATE_BACKGROUND';   // updates the background to remove full rows
@@ -27,6 +28,7 @@ export const moveTetromino = (move: Move) => ({ type: MOVE_TETROMINO, move });
 export const rotateTetromino = () => ({ type: ROTATE_TETROMINO });
 
 /** GAME ENGINE */
+export const resetState = () => ({type: RESET_STATE });
 export const spawnTetromino = (tetromino: Tetromino) => ({ type: SPAWN_TETROMINO, tetromino });
 export const mergeForeground = () => ({ type: MERGE_FOREGROUND });
 export const updateBackground = () => ({ type: UPDATE_BACKGROUND });

@@ -1,14 +1,15 @@
 import { 
     MERGE_FOREGROUND,
     MOVE_TETROMINO, 
+    RESET_STATE,
     ROTATE_TETROMINO,
     SPAWN_TETROMINO,
     UPDATE_BACKGROUND,
-    UPDATE_SCORE
+    UPDATE_SCORE,
  } from '../actions';
 import { Grid } from '../components/grid';
 import { buildTetriminoGrid, buildTetrominoCells, getRandomTetromino, Tetromino } from '../components/tetromino';
-import { mergeForegroundReducer, spawnTetrominoReducer, updateBackgroundReducer, updateScoreReducer } from './engineReducers';
+import { mergeForegroundReducer, resetStateReducer, spawnTetrominoReducer, updateBackgroundReducer, updateScoreReducer } from './engineReducers';
 import { moveTetrominoReducer, rotateTetrominoReducer } from './playerReducers';
 
 export const GRID_WIDTH = 10;
@@ -39,6 +40,7 @@ export const initialState: IStore = {
  */
 export default function tetrisApp(state: IStore = initialState, action: any): IStore {
     switch (action.type) {
+        case RESET_STATE:       return resetStateReducer();
         case MOVE_TETROMINO:    return moveTetrominoReducer(state, action);
         case ROTATE_TETROMINO:  return rotateTetrominoReducer(state);
         case SPAWN_TETROMINO:   return spawnTetrominoReducer(state);
