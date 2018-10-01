@@ -27,5 +27,33 @@ export default StyleSheet.create({
     active: {
         backgroundColor: '#3399ff',
         boxShadow: 'inset 1px 1px #0073e6'
+    },
+
+    longBoy: {
+        backgroundColor: '#00ffff'
+    },
+
+    backL: {
+        backgroundColor: '#0000ff'
+    },
+
+    l: {
+        backgroundColor: '#ffa500'
+    },
+
+    square: {
+        backgroundColor: '#ffff00'
+    },
+
+    backZ: {
+        backgroundColor: '#00ff00'
+    },
+
+    t: {
+        backgroundColor: '#800080'
+    },
+
+    z: {
+        backgroundColor: '#ff0000'
     }
 });
