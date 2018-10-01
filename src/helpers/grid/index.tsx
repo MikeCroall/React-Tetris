@@ -11,9 +11,9 @@ export const endCondition = (foreground: Grid, background: Grid): boolean => (fo
 export const horizontalOverflow = (grid: Grid): boolean => {
     const { xOffset = 0 } = grid.getState();
     return grid.getCells().some(
-        (r: boolean[]) =>
-            r.some((c: boolean, x: number) =>
-                c && (x + xOffset >= GRID_WIDTH)
+        (r: number[]) =>
+            r.some((c: number, x: number) =>
+                c !== 0 && (x + xOffset >= GRID_WIDTH)
             )
     );
 }
@@ -22,7 +22,7 @@ export const horizontalOverflow = (grid: Grid): boolean => {
  * Returns whether or not the grid is currently overflowing the global grid height
  * @param grid the Grid instance to check for overflow
  */
-export const verticalOverflow = (grid: Grid): boolean => grid.getPaddedCells({ width: GRID_WIDTH, height: GRID_HEIGHT }).pop()!.some(c => c);
+export const verticalOverflow = (grid: Grid): boolean => grid.getPaddedCells({ width: GRID_WIDTH, height: GRID_HEIGHT }).pop()!.some(c => c !== 0);
 
 /**
  * Returns whether or not the grid is currently overflowing the global grid dimensions

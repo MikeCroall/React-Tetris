@@ -1,4 +1,4 @@
-/** 
+/**
  * The number of cells wide and high the grid is
  */
 interface IDimensions {
@@ -6,16 +6,16 @@ interface IDimensions {
     height: number
 }
 
-/** 
+/**
  * State is just cell data (and potentially some positive x and y offsets)
  */
 interface IGridState {
-    cells: boolean[][],
+    cells: number[][],
     xOffset?: number,
     yOffset?: number
 }
 
-/** 
+/**
  * A 2D grid of cells, containing some data
  */
 export class Grid {
@@ -31,16 +31,16 @@ export class Grid {
 
         // use state parameter if provided, otherwise fill with nulls
         this.state = state || {
-            cells: Array(dimensions.height).fill(false).map(row => Array(dimensions.width).fill(false))
+            cells: Array(dimensions.height).fill(0).map(row => Array(dimensions.width).fill(0))
         };
     }
 
     /**
      * Clones the Grid
      */
-    public clone = (): Grid => (new Grid(this.getDimensions(), { 
+    public clone = (): Grid => (new Grid(this.getDimensions(), {
         cells: this.getCells(),
-        xOffset: this.state.xOffset, 
+        xOffset: this.state.xOffset,
         yOffset: this.state.yOffset
     }));
 
@@ -49,14 +49,14 @@ export class Grid {
      */
     public deleteRow = (y: number): Grid => new Grid(this.getDimensions(), {
         cells: [
-            Array(this.getDimensions().width).fill(false), 
-            ...this.getCells().slice(0, y), 
+            Array(this.getDimensions().width).fill(0),
+            ...this.getCells().slice(0, y),
             ...this.getCells().slice(y + 1)
         ]
     });
 
-    /** 
-     * Returns the (width, height) dimensions of this grid 
+    /**
+     * Returns the (width, height) dimensions of this grid
      */
     public getDimensions = (): IDimensions => ({width: this.getCells()[0].length, height: this.getCells().length});
 
@@ -66,15 +66,15 @@ export class Grid {
         yOffset: this.state.yOffset
     });
 
-    /** 
-     * Returns a copy of the cells in this grid's state 
+    /**
+     * Returns a copy of the cells in this grid's state
      */
-    public getCells = (): boolean[][] => this.state.cells.slice(0).map(row => row.slice(0));
+    public getCells = (): number[][] => this.state.cells.slice(0).map(row => row.slice(0));
 
     /**
      * Returns a copy of the grid's cells once offsets have been applied
      */
-    public getOffsetCells = (): boolean[][] => {
+    public getOffsetCells = (): number[][] => {
 
         // TODO: fix this, the code is dirty
 
@@ -86,13 +86,13 @@ export class Grid {
 
         return yOffset ? [
 
-            // fill in y offset rows of false data
-            ...Array(yOffset).fill(false).map(r => Array(width + xOffset).fill(false)),
+            // fill in y offset rows of 'empty' data
+            ...Array(yOffset).fill(0).map(r => Array(width + xOffset).fill(0)),
 
             // pad the grid's rows with the x offset data
-            ...cells.map(r => xOffset ? [...Array(xOffset).fill(false), ...r.slice(0)] : r.slice(0))
-        ] : 
-        [...cells.map(r => xOffset ? [...Array(xOffset).fill(false), ...r.slice(0)] : r.slice(0))];
+            ...cells.map(r => xOffset ? [...Array(xOffset).fill(0), ...r.slice(0)] : r.slice(0))
+        ] :
+        [...cells.map(r => xOffset ? [...Array(xOffset).fill(0), ...r.slice(0)] : r.slice(0))];
     }
 
     /**
@@ -100,67 +100,67 @@ export class Grid {
      * @param width the number of values in each row of the grid
      * @param height the number of rows in the gri
      */
-    public getPaddedCells = (otherDimensions: IDimensions): boolean[][] => {
-    
+    public getPaddedCells = (otherDimensions: IDimensions): number[][] => {
+
         // get this grid's cell data, and its (x, y) offset from the (0, 0) origin
         const cells = this.getOffsetCells();
-        
+
         // get the width of the grid, so that rows can be filled properly
         const xOffset = Math.max(0, otherDimensions.width - cells[0].length || 0);
         const yOffset = Math.max(0, otherDimensions.height - cells.length || 0);
-        
+
         return [
 
             // pad the grid's rows with the x offset data
-            ...cells.map(r => xOffset ? [...r.slice(0), ...Array(xOffset).fill(false)] : r),
+            ...cells.map(r => xOffset ? [...r.slice(0), ...Array(xOffset).fill(0)] : r),
 
-            // fill in y offset rows of false data
-            ...Array(yOffset).fill(false).map(r => Array(otherDimensions.width).fill(false))
+            // fill in y offset rows of 'empty' data
+            ...Array(yOffset).fill(0).map(r => Array(otherDimensions.width).fill(0))
         ].slice(0, otherDimensions.height );
     }
 
     /**
      * Merges the contents of this, and another, Grid's cells into a new one
      * @param other the other Grid to merge data with
-     */    
+     */
     public merge = (other: Grid): Grid => {
 
         // get the cells of the other grid, adjusted for offsets
         const otherCells = other.getPaddedCells(this.getDimensions());
 
         return new Grid(this.getDimensions(), {
-            cells: this.getCells().map((row, y) => 
+            cells: this.getCells().map((row, y) =>
                 row.map((cell, x) => cell || otherCells[y][x])
             )
         })
     }
 
-    /** 
+    /**
      * Shifts copied cell data up or right, returning a new Grid with this cell data
-     * @param down number of rows to add/remove from the start of the grid  
+     * @param down number of rows to add/remove from the start of the grid
      * @param right the number of columns to add/remove from the start of the grid
      */
-    public shift = (down: number, right: number): Grid => 
+    public shift = (down: number, right: number): Grid =>
 
-        new Grid(this.getDimensions(), { 
-            cells: this.getCells(), 
-            xOffset: Math.max(0, (this.state.xOffset || 0) + right), 
+        new Grid(this.getDimensions(), {
+            cells: this.getCells(),
+            xOffset: Math.max(0, (this.state.xOffset || 0) + right),
             yOffset: Math.max(0, (this.state.yOffset || 0) + down)
         });
-   
-    /** 
-     * Returns whether or not the Grids overlap 
+
+    /**
+     * Returns whether or not the Grids overlap
      * @param other the Grid to compare against
      */
     public overlap = (other: Grid): boolean => {
-        
+
         const adjustedOther = other.getPaddedCells(this.getDimensions());
-    
+
         return this.state.cells.map(
             (row, y) => row.map(
-                (cell, x) => [adjustedOther[y][x], cell].every(c => c)
+                (cell, x) => [adjustedOther[y][x], cell].every(c => c !== 0)
             ).some(x => x)
         ).some(x => x);
     }
-    
+
 }

@@ -24,36 +24,43 @@ export default StyleSheet.create({
         margin: 1
     },
 
-    active: {
+    activeDefault: {
         backgroundColor: '#3399ff',
         boxShadow: 'inset 1px 1px #0073e6'
     },
 
     longBoy: {
-        backgroundColor: '#00ffff'
+        backgroundColor: '#00ffff',
+        boxShadow: 'inset 1px 1px #00b3b3'
     },
 
     backL: {
-        backgroundColor: '#0000ff'
+        backgroundColor: '#0000ff',
+        boxShadow: 'inset 1px 1px #0000b3'
     },
 
     l: {
-        backgroundColor: '#ffa500'
+        backgroundColor: '#ffa500',
+        boxShadow: 'inset 1px 1px #b37400'
     },
 
     square: {
-        backgroundColor: '#ffff00'
+        backgroundColor: '#ffff00',
+        boxShadow: 'inset 1px 1px #b3b300'
     },
 
     backZ: {
-        backgroundColor: '#00ff00'
+        backgroundColor: '#00ff00',
+        boxShadow: 'inset 1px 1px #00b300'
     },
 
     t: {
-        backgroundColor: '#800080'
+        backgroundColor: '#800080',
+        boxShadow: 'inset 1px 1px #330033'
     },
 
     z: {
-        backgroundColor: '#ff0000'
+        backgroundColor: '#ff0000',
+        boxShadow: 'inset 1px 1px #b30000'
     }
 });

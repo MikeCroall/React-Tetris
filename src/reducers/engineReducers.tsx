@@ -62,16 +62,16 @@ export function updateBackgroundReducer(state: IStore): IStore {
     }
 
     // if the foreground touches the bottom of the screen, or collides with the background, then spawn a new tetromino
-    if (currentForeground[currentForeground.length - 1].some(c => c) || state.background.overlap(shiftedForeground)) {
+    if (currentForeground[currentForeground.length - 1].some(c => c !== 0) || state.background.overlap(shiftedForeground)) {
         newState = spawnTetrominoReducer(mergeForegroundReducer(state));
     }
 
     let combo = 0;
 
     // FIXME: this is disgusting, change it
-    while (newState.background.getCells().some(row => row.every(c => c))) {
+    while (newState.background.getCells().some(row => row.every(c => c !== 0))) {
         newState.lines += 1
-        newState.background = newState.background.deleteRow(newState.background.getCells().findIndex(row => row.every(c => c)));
+        newState.background = newState.background.deleteRow(newState.background.getCells().findIndex(row => row.every(c => c !== 0)));
         combo = combo ? (combo + (combo * 2)) : 100;
     }
 
