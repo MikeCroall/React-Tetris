@@ -16,7 +16,7 @@ interface IAppProps {
   rotate: () => void;
 }
 
-class App extends React.Component<IAppProps> {  
+class App extends React.Component<IAppProps> {
   public render() {
     return (
       <div className={css(styles.app)}>
@@ -27,11 +27,11 @@ class App extends React.Component<IAppProps> {
   }
 
   @keydown(Keys.LEFT, Keys.RIGHT, Keys.UP, Keys.DOWN, Keys.R)
-  private submit(event: any){ 
+  private submit(event: any){
     switch(event.key){
       case 'ArrowLeft':   return this.props.left();
       case 'ArrowRight':  return this.props.right();
-      case 'ArrowUp':     return this.props.up();
+      case 'ArrowUp':     return this.props.rotate();
       case 'ArrowDown':   return this.props.down();
       case 'r':           return this.props.rotate();
     }
