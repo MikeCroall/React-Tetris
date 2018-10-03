@@ -35,7 +35,7 @@ interface ICoordinate {
 const tetrominoCoordinates: Record<Tetromino, ICoordinate[][]> = {
     backL: [
         [{ x: 0, y: 0 }, ..._.range(3).map(x => ({ x, y: 1 }))],
-        [{ x: 2, y: 0 }, ..._.range(3).map(y => ({ x: 1, y }))],
+        [{ x: 1, y: 0 }, ..._.range(3).map(y => ({ x: 0, y }))],
         [{ x: 2, y: 2 }, ..._.range(3).map(x => ({ x, y: 1 }))],
         [{ x: 0, y: 2 }, ..._.range(3).map(y => ({ x: 1, y }))]
     ],
